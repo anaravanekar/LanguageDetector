@@ -87,14 +87,15 @@ public class LanguageDetectorMain implements CommandLineRunner  {
 		List<MDMAccountAddress> addresses = null;
 		int pageNumber=0;
 		do {
-			Page<MDMAccountAddress> pageResult = (Page<MDMAccountAddress>) addressRepository.findAll(new PageRequest(pageNumber, pageSize, Sort.Direction.ASC, "systemId"));
+			Page<MDMAccountAddress> pageResult = (Page<MDMAccountAddress>) addressRepository.findAll(new PageRequest(pageNumber, pageSize, Sort.Direction.ASC, "rowNumber"));
 			addresses = pageResult!=null?pageResult.getContent():null;
 			pageNumber++;
 			List<MDMAccountAddress> updatedAddresses = new ArrayList<>();
 			if(addresses!=null && !addresses.isEmpty()) {
 				addresses.stream().forEach(a -> {
 					//log.debug("Address Info:" + a);
-					String locale = getLocale(languageDetector, a.getAddress().trim());
+					String textForDetection = a.getAddress()!=null?a.getAddress().trim():"";
+					String locale = getLocale(languageDetector, textForDetection);
 					//log.debug("Detected Locale:" + locale);
 					if (null != locale && ("ko".equalsIgnoreCase(locale) || "ja".equalsIgnoreCase(locale) || "zh-cn".equalsIgnoreCase(locale))) {
 						a.setLocale("ja");
@@ -102,7 +103,7 @@ public class LanguageDetectorMain implements CommandLineRunner  {
 					}
 				});
 				addressRepository.save(updatedAddresses);
-				log.info("Updated {} records with locale ja", updatedAddresses.size());
+				log.info("Page {}. Updated {} records with locale ja", pageNumber,updatedAddresses.size());
 			}
 		}while(addresses!=null && !addresses.isEmpty());
 	}
@@ -111,7 +112,7 @@ public class LanguageDetectorMain implements CommandLineRunner  {
 		List<MDMAccount> accounts = null;
 		int pageNumber=0;
 		do {
-			Page<MDMAccount> pageResult = (Page<MDMAccount>) repository.findAll(new PageRequest(pageNumber, pageSize, Sort.Direction.ASC, "rowNumber"));
+			Page<MDMAccount> pageResult = (Page<MDMAccount>) repository.findAll(new PageRequest(pageNumber, pageSize, Sort.Direction.ASC, "systemId"));
 			accounts = pageResult!=null?pageResult.getContent():null;
 			pageNumber++;
 			List<MDMAccount> updatedAccounts = new ArrayList<>();
@@ -152,7 +153,7 @@ public class LanguageDetectorMain implements CommandLineRunner  {
 			detectedLanguage = ldLocale.getLanguage();
 //			log.info("Detected Locale: "+ ldLocale);
 		}else{
-			log.error("Language could not be detected. May be because of probability of detected language is less than minimal confidence 0.999");
+//			log.error("Language could not be detected. May be because of probability of detected language is less than minimal confidence 0.999");
 		}
 
 		return detectedLanguage;

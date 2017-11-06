@@ -1,11 +1,19 @@
 package com.keysight.lang.detector.main;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.google.common.base.Optional;
+import com.keysight.lang.detector.model.MDMAccount;
+import com.keysight.lang.detector.model.MDMAccountAddress;
+import com.keysight.lang.detector.repo.MDMAccountAddressRepository;
+import com.keysight.lang.detector.repo.MDMAccountRepository;
+import com.optimaize.langdetect.LanguageDetector;
+import com.optimaize.langdetect.LanguageDetectorBuilder;
+import com.optimaize.langdetect.i18n.LdLocale;
+import com.optimaize.langdetect.ngram.NgramExtractors;
+import com.optimaize.langdetect.profiles.LanguageProfile;
+import com.optimaize.langdetect.profiles.LanguageProfileReader;
+import com.optimaize.langdetect.text.CommonTextObjectFactories;
+import com.optimaize.langdetect.text.TextObject;
+import com.optimaize.langdetect.text.TextObjectFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,20 +29,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import com.google.common.base.Optional;
-import com.keysight.lang.detector.model.MDMAccount;
-import com.keysight.lang.detector.model.MDMAccountAddress;
-import com.keysight.lang.detector.repo.MDMAccountAddressRepository;
-import com.keysight.lang.detector.repo.MDMAccountRepository;
-import com.optimaize.langdetect.LanguageDetector;
-import com.optimaize.langdetect.LanguageDetectorBuilder;
-import com.optimaize.langdetect.i18n.LdLocale;
-import com.optimaize.langdetect.ngram.NgramExtractors;
-import com.optimaize.langdetect.profiles.LanguageProfile;
-import com.optimaize.langdetect.profiles.LanguageProfileReader;
-import com.optimaize.langdetect.text.CommonTextObjectFactories;
-import com.optimaize.langdetect.text.TextObject;
-import com.optimaize.langdetect.text.TextObjectFactory;
+import javax.annotation.Resource;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootApplication
 @EnableJpaRepositories("com.keysight.lang")
@@ -44,13 +42,13 @@ public class LanguageDetectorMain implements CommandLineRunner  {
 	private static final Logger log = LoggerFactory.getLogger(LanguageDetectorMain.class);
 	private static final int pageSize = 100000;
 	@Resource
-	private Environment environment; 
+	private Environment environment;
 	@Resource
 	MDMAccountRepository repository;
 
 	@Resource
 	MDMAccountAddressRepository addressRepository;
-	
+
 	public MDMAccountAddressRepository getAddressRepository() {
 		return addressRepository;
 	}
@@ -113,7 +111,7 @@ public class LanguageDetectorMain implements CommandLineRunner  {
 		List<MDMAccount> accounts = null;
 		int pageNumber=0;
 		do {
-			Page<MDMAccount> pageResult = (Page<MDMAccount>) repository.findAll(new PageRequest(pageNumber, pageSize, Sort.Direction.ASC, "systemId"));
+			Page<MDMAccount> pageResult = (Page<MDMAccount>) repository.findAll(new PageRequest(pageNumber, pageSize, Sort.Direction.ASC, "rowNumber"));
 			accounts = pageResult!=null?pageResult.getContent():null;
 			pageNumber++;
 			List<MDMAccount> updatedAccounts = new ArrayList<>();
@@ -138,7 +136,7 @@ public class LanguageDetectorMain implements CommandLineRunner  {
 
 		/**
 		 * Invoke Language detector library to find out the locale & language
-		 * 
+		 *
 		 */
 		String detectedLanguage = null;
 

@@ -3,7 +3,6 @@ package com.keysight.lang.detector.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.IdClass;
 
 
 @Entity(name="MDM_ACCOUNT_ADDRESS")
@@ -24,21 +23,21 @@ public class MDMAccountAddress{
 	@Id
 	@Column(name="INTERFACE_STATUS")
     private String interfaceStatus;*/
-	
+
 	@Column(name="ADDRESS")
-    private String address;
+	private String address;
 
 	@Column(name="LOCALE")
-    private String locale;
+	private String locale;
 
-	
+
 	public String getLocale() {
 		return locale;
 	}
 	public void setLocale(String locale) {
 		this.locale = locale;
 	}
-	
+
 	public String getAddress() {
 		return address;
 	}

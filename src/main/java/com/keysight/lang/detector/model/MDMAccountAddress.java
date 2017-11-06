@@ -10,6 +10,7 @@ import javax.persistence.IdClass;
 @IdClass(MDMAccountAddressId.class)
 public class MDMAccountAddress{
 
+	@Id
 	@Column(name="ROW_NO")
 	private Integer rowNumber;
 

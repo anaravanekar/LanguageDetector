@@ -7,7 +7,6 @@ import javax.persistence.IdClass;
 
 
 @Entity(name="MDM_ACCOUNT_ADDRESS")
-@IdClass(MDMAccountAddressId.class)
 public class MDMAccountAddress{
 
 	@Id

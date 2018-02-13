@@ -91,8 +91,8 @@ public class LanguageDetectorMain implements CommandLineRunner  {
 		do {
 			Page<MDMAccountAddress> pageResult = (Page<MDMAccountAddress>) addressRepository.findAll(new PageRequest(pageNumber, pageSize, Sort.Direction.ASC, "rowNumber"));
 			addresses = pageResult!=null?pageResult.getContent():null;
-			log.info("pageResult:"+pageResult);
-			log.info("addresses:"+addresses);
+//			log.info("pageResult:"+pageResult);
+//			log.info("addresses:"+addresses);
 			pageNumber++;
 			List<MDMAccountAddress> updatedAddresses = new ArrayList<>();
 			if(addresses!=null && !addresses.isEmpty()) {

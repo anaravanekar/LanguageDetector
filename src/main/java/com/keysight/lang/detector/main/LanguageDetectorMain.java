@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.Objects;
+
 @SpringBootApplication
 @EnableJpaRepositories("com.keysight.lang")
 @ComponentScan({"com.keysight.lang"})
@@ -89,19 +91,27 @@ public class LanguageDetectorMain implements CommandLineRunner  {
 		do {
 			Page<MDMAccountAddress> pageResult = (Page<MDMAccountAddress>) addressRepository.findAll(new PageRequest(pageNumber, pageSize, Sort.Direction.ASC, "rowNumber"));
 			addresses = pageResult!=null?pageResult.getContent():null;
+//			log.info("pageResult:"+pageResult);
+//			log.info("addresses:"+addresses);
 			pageNumber++;
 			List<MDMAccountAddress> updatedAddresses = new ArrayList<>();
 			if(addresses!=null && !addresses.isEmpty()) {
-				addresses.stream().forEach(a -> {
-					//log.debug("Address Info:" + a);
-					String textForDetection = a.getAddress()!=null?a.getAddress().trim():"";
-					String locale = getLocale(languageDetector, textForDetection);
-					//log.debug("Detected Locale:" + locale);
-					if (null != locale && ("ko".equalsIgnoreCase(locale) || "ja".equalsIgnoreCase(locale) || "zh-cn".equalsIgnoreCase(locale))) {
-						a.setLocale("ja");
-						updatedAddresses.add(a);
+				//addresses.stream().filter(Objects::nonNull).forEach(a -> {
+				log.info("fetched addresses:"+addresses.size());
+				for(MDMAccountAddress a:addresses){
+					log.info("Address Info:" + a);
+					if(a!=null){
+						String textForDetection = a.getAddress()!=null?a.getAddress().trim():"";
+						log.info("textForDetection:" + textForDetection);
+						String locale = getLocale(languageDetector, textForDetection);
+						log.debug("Detected Locale:" + locale);
+						if (null != locale && ("ko".equalsIgnoreCase(locale) || "ja".equalsIgnoreCase(locale) || "zh-cn".equalsIgnoreCase(locale))) {
+							a.setLocale("ja");
+							updatedAddresses.add(a);
+						}
 					}
-				});
+				//});
+				}
 				addressRepository.save(updatedAddresses);
 				log.info("Page {}. Updated {} records with locale ja", pageNumber,updatedAddresses.size());
 			}
@@ -117,7 +127,7 @@ public class LanguageDetectorMain implements CommandLineRunner  {
 			pageNumber++;
 			List<MDMAccount> updatedAccounts = new ArrayList<>();
 			if(accounts!=null && !accounts.isEmpty()) {
-				accounts.stream().forEach(a -> {
+				accounts.stream().filter(Objects::nonNull).forEach(a -> {
 					//log.debug("Account Info:" + a);
 					String locale = getLocale(languageDetector, a.getAccountName().trim());
 					//log.debug("Detected Locale:" + locale);

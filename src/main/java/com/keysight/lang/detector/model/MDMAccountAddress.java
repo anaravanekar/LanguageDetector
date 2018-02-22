@@ -5,8 +5,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 
-@Entity(name="MDM_ACCOUNT_ADDRESS")
-public class MDMAccountAddress{
+@Entity(name="MDM_ACCOUNT_ADDRESS2")
+public class MDMAccountAddress {
 
 	@Id
 	@Column(name="ROW_NO")
